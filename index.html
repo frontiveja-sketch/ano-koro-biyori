@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>あの頃日和 | Rick</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg:        #faf9f7;
+      --bg-card:   #ffffff;
+      --bg-sub:    #f4f3f0;
+      --text:      #1a1a18;
+      --text-sub:  #6b6b66;
+      --text-hint: #a8a8a2;
+      --border:    rgba(0,0,0,0.10);
+      --border-md: rgba(0,0,0,0.16);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Serif JP', serif;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    .site {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.6rem 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .logo {
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.8rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: var(--text-sub);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 5rem 0 4rem;
+      text-align: center;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .hero-en {
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      color: var(--text-hint);
+      margin-bottom: 1.4rem;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      line-height: 1.5;
+      margin-bottom: 1.4rem;
+    }
+
+    .hero-desc {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 2.4;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Section ── */
+    .section {
+      padding: 2.8rem 0;
+    }
+
+    .section + .section {
+      border-top: 0.5px solid var(--border);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-title {
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      color: var(--text-sub);
+    }
+
+    .section-more {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--text-hint);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .section-more:hover {
+      color: var(--text-sub);
+    }
+
+    /* ── Latest list ── */
+    .latest {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.3rem 1.4rem;
+      margin-bottom: 10px;
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .latest:hover {
+      border-color: var(--border-md);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .latest-num {
+      font-size: 34px;
+      font-weight: 300;
+      color: var(--text-hint);
+      min-width: 44px;
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+
+    .latest-body {
+      flex: 1;
+    }
+
+    .latest-title {
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .latest-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.7;
+    }
+
+    .latest-date {
+      font-size: 10px;
+      color: var(--text-hint);
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    /* ── Series grid ── */
+    .manga-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 500px) {
+      .manga-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .manga-card {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .manga-card:hover {
+      border-color: var(--border-md);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .manga-thumb {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* ── サムネイルの背景色：ここに漫画の画像を入れてください ── */
+    .thumb-1 { background: #f5f0eb; }
+    .thumb-2 { background: #edf0f5; }
+    .thumb-3 { background: #f0f5ed; }
+    .thumb-4 { background: #f5edf0; }
+    .thumb-5 { background: #f0edf5; }
+    .thumb-6 { background: #f5f3ed; }
+
+    /*
+      画像を表示するには .manga-thumb の中の <svg> を削除して
+      以下のように <img> タグを入れてください：
+      <img src="images/piano.jpg" alt="ピアノ日和" style="width:100%;height:100%;object-fit:cover;">
+    */
+
+    .manga-thumb svg {
+      width: 72px;
+      height: 72px;
+      opacity: 0.55;
+    }
+
+    .ep-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: 100px;
+      padding: 2px 9px;
+      color: var(--text-sub);
+    }
+
+    .manga-info {
+      padding: 11px 14px 14px;
+    }
+
+    .manga-title {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .manga-meta {
+      font-size: 10px;
+      color: var(--text-hint);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── About ── */
+    .about {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--bg-sub);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.2rem;
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+    }
+
+    /*
+      アイコン画像を使うには <svg> を削除して：
+      <img src="images/avatar.jpg" alt="Rick" style="width:100%;height:100%;object-fit:cover;">
+    */
+
+    .about-name {
+      font-size: 17px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      margin-bottom: 0.6rem;
+    }
+
+    .about-text {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 2.1;
+      letter-spacing: 0.05em;
+    }
+
+    .sns {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 1.4rem;
+      flex-wrap: wrap;
+    }
+
+    .sns a {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-hint);
+      text-decoration: none;
+      border: 0.5px solid var(--border);
+      border-radius: 100px;
+      padding: 5px 16px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .sns a:hover {
+      color: var(--text-sub);
+      border-color: var(--border-md);
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 1.8rem 0;
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-hint);
+      border-top: 0.5px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<div class="site">
+
+  <!-- ナビゲーション -->
+  <nav>
+    <a href="index.html" class="logo">あの頃日和</a>
+    <ul class="nav-links">
+      <li><a href="#">作品</a></li>
+      <li><a href="#">about</a></li>
+      <li><a href="#">contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ヒーロー -->
+  <div class="hero">
+    <div class="hero-en">Rick's manga</div>
+    <div class="hero-title">あの頃日和</div>
+    <div class="hero-desc">
+      忘れてしまった思い出や、<br>
+      出来事を描いています。
+    </div>
+  </div>
+
+  <!-- 最新作 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">new</span>
+      <a href="#" class="section-more">すべて見る →</a>
+    </div>
+
+    <a href="#" class="latest">
+      <div class="latest-num">1</div>
+      <div class="latest-body">
+        <div class="latest-title">ピアノ日和</div>
+        <div class="latest-sub">あの日、窓から聴こえてきたピアノの音のこと</div>
+      </div>
+      <div class="latest-date">2025.05.20</div>
+    </a>
+
+    <a href="#" class="latest">
+      <div class="latest-num">2</div>
+      <div class="latest-body">
+        <div class="latest-title">犬</div>
+        <div class="latest-sub">いつも一緒にいた、あの子のこと</div>
+      </div>
+      <div class="latest-date">2025.05.10</div>
+    </a>
+
+    <a href="#" class="latest">
+      <div class="latest-num">3</div>
+      <div class="latest-body">
+        <div class="latest-title">移り変わり</div>
+        <div class="latest-sub">季節のように、あの頃はゆっくり変わっていった</div>
+      </div>
+      <div class="latest-date">2025.04.28</div>
+    </a>
+  </div>
+
+  <!-- シリーズ一覧 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">series</span>
+      <a href="#" class="section-more">すべて見る →</a>
+    </div>
+
+    <div class="manga-grid">
+
+      <a href="#" class="manga-card">
+        <div class="manga-thumb thumb-1">
+          <span class="ep-badge">全12話</span>
+          <!-- ここにサムネイル画像を入れる -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M28 52 Q35 28 40 24 Q45 28 52 52" stroke="#b0a090" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M32 44h16" stroke="#b0a090" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="manga-info">
+          <div class="manga-title">ピアノ日和</div>
+          <div class="manga-meta">思い出 · 2025年〜</div>
+        </div>
+      </a>
+
+      <a href="#" class="manga-card">
+        <div class="manga-thumb thumb-2">
+          <span class="ep-badge">連載中</span>
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="46" rx="16" ry="10" stroke="#9098b0" stroke-width="1.5"/>
+            <circle cx="33" cy="36" r="5" stroke="#9098b0" stroke-width="1.5"/>
+            <circle cx="47" cy="36" r="5" stroke="#9098b0" stroke-width="1.5"/>
+            <path d="M28 42 Q26 34 28 30" stroke="#9098b0" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M52 42 Q54 34 52 30" stroke="#9098b0" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="manga-info">
+          <div class="manga-title">犬</div>
+          <div class="manga-meta">思い出 · 2025年〜</div>
+        </div>
+      </a>
+
+      <a href="#" class="manga-card">
+        <div class="manga-thumb thumb-3">
+          <span class="ep-badge">読切</span>
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 55 Q30 35 40 40 Q50 45 60 25" stroke="#90b098" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="manga-info">
+          <div class="manga-title">移り変わり</div>
+          <div class="manga-meta">日常 · 2025年</div>
+        </div>
+      </a>
+
+      <a href="#" class="manga-card">
+        <div class="manga-thumb thumb-4">
+          <span class="ep-badge">全6話</span>
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 20 L40 60M26 28 Q40 20 54 28M22 44 Q40 34 58 44M26 56 Q40 48 54 56" stroke="#b09098" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="manga-info">
+          <div class="manga-title">神社の朝</div>
+          <div class="manga-meta">情景 · 2024年〜</div>
+        </div>
+      </a>
+
+      <a href="#" class="manga-card">
+        <div class="manga-thumb thumb-5">
+          <span class="ep-badge">読切</span>
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="36" r="12" stroke="#9890b0" stroke-width="1.5"/>
+            <path d="M34 36 L38 40 L46 32" stroke="#9890b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M30 56 Q40 50 50 56" stroke="#9890b0" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="manga-info">
+          <div class="manga-title">あの夏の球場</div>
+          <div class="manga-meta">思い出 · 2024年</div>
+        </div>
+      </a>
+
+      <a href="#" class="manga-card">
+        <div class="manga-thumb thumb-6">
+          <span class="ep-badge">全8話</span>
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="24" y="22" width="32" height="36" rx="3" stroke="#b0a890" stroke-width="1.5"/>
+            <path d="M30 32h20M30 40h14M30 48h18" stroke="#b0a890" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="manga-info">
+          <div class="manga-title">東京の夕暮れ</div>
+          <div class="manga-meta">日常 · 2024年〜</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- プロフィール -->
+  <div class="about">
+    <div class="avatar">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="10" r="5" stroke="#a8a8a2" stroke-width="1.2"/>
+        <path d="M5 24c0-5 4-8 9-8s9 3 9 8" stroke="#a8a8a2" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="about-name">Rick</div>
+    <div class="about-text">
+      東京在住、会社員。<br>
+      懐かしい思い出や想いの瞬間を漫画にしています。<br>
+      ワインと犬と神社巡りと野球が好きです。
+    </div>
+    <div class="sns">
+      <a href="#">X (Twitter)</a>
+      <a href="#">Instagram</a>
+      <a href="#">pixiv</a>
+    </div>
+  </div>
+
+</div><!-- /site -->
+
+<footer>
+  © 2025 Rick · あの頃日和 · all rights reserved
+</footer>
+
+</body>
+</html>

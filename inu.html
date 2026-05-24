@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>犬 | あの頃日和</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #faf9f7;
+      --bg-card:   #ffffff;
+      --bg-sub:    #f4f3f0;
+      --text:      #1a1a18;
+      --text-sub:  #6b6b66;
+      --text-hint: #a8a8a2;
+      --border:    rgba(0,0,0,0.10);
+      --border-md: rgba(0,0,0,0.16);
+      --radius-lg: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-back {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--text-hint);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover { color: var(--text-sub); }
+
+    /* ── Header ── */
+    .manga-header {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 1.5rem;
+      text-align: center;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .manga-label {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: var(--text-hint);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .manga-title {
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.5rem;
+    }
+
+    .manga-desc {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 2;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Viewer ── */
+    .viewer {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* ページカウンター */
+    .page-counter {
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-hint);
+      margin-bottom: 1.2rem;
+    }
+
+    /* 漫画画像エリア */
+    .manga-image-wrap {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 1.8rem;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .manga-image-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* 画像がない時のプレースホルダー */
+    .placeholder {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-hint);
+    }
+
+    .placeholder-num {
+      font-size: 64px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      color: var(--border-md);
+    }
+
+    .placeholder-text {
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      line-height: 2;
+    }
+
+    /* ── ナビゲーションボタン ── */
+    .nav-btns {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      padding: 0.8rem 2.2rem;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 0.5px solid var(--border);
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+
+    .btn-primary:hover {
+      background: #333;
+      border-color: #333;
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-sub);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-md);
+      color: var(--text);
+    }
+
+    .btn:disabled, .btn.disabled {
+      opacity: 0.3;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* プログレスバー */
+    .progress-wrap {
+      margin-bottom: 0.8rem;
+      background: var(--bg-sub);
+      border-radius: 100px;
+      height: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--text-hint);
+      border-radius: 100px;
+      transition: width 0.3s ease;
+    }
+
+    /* ── 完了メッセージ ── */
+    .finished {
+      display: none;
+      text-align: center;
+      padding: 3rem 1rem;
+      border-top: 0.5px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    .finished-title {
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.8rem;
+    }
+
+    .finished-text {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 2;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 1.8rem 0;
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-hint);
+      border-top: 0.5px solid var(--border);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">あの頃日和</a>
+  <a href="index.html" class="nav-back">← 作品一覧に戻る</a>
+</nav>
+
+<div class="manga-header">
+  <div class="manga-label">manga · 思い出</div>
+  <div class="manga-title">犬</div>
+  <div class="manga-desc">いつも一緒にいた、あの子のこと</div>
+</div>
+
+<div class="viewer">
+
+  <!-- プログレスバー -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- ページカウンター -->
+  <div class="page-counter" id="pageCounter">1 / 5</div>
+
+  <!-- 漫画画像エリア -->
+  <div class="manga-image-wrap" id="imageWrap">
+    <!-- ======================================================
+      【画像の入れ方】
+      imagesフォルダに漫画画像を入れて、以下のように書く：
+
+      <img src="images/inu_01.jpg" alt="犬 1ページ目">
+
+      ページを増やすには pages 配列に追加してください（下のscriptを参照）
+    ====================================================== -->
+    <div class="placeholder" id="placeholder">
+      <div class="placeholder-num" id="placeholderNum">1</div>
+      <div class="placeholder-text" id="placeholderLabel">
+        ここに漫画の画像が入ります<br>
+        <span style="font-size:11px;opacity:0.7">images/inu_01.jpg</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ナビゲーションボタン -->
+  <div class="nav-btns">
+    <button class="btn btn-secondary" id="btnPrev" onclick="changePage(-1)">← 前へ</button>
+    <button class="btn btn-primary"   id="btnNext" onclick="changePage(1)">次へ →</button>
+  </div>
+
+  <!-- 読了メッセージ -->
+  <div class="finished" id="finished">
+    <div class="finished-title">おわり</div>
+    <div class="finished-text">
+      最後まで読んでいただきありがとうございました。
+    </div>
+    <a href="index.html" class="btn btn-secondary">← 作品一覧に戻る</a>
+  </div>
+
+</div>
+
+<footer>© 2025 Rick · あの頃日和</footer>
+
+<script>
+  // =====================================================
+  //  ページの設定
+  //  src に画像パスを入れてください
+  //  画像なしの場合は src を空 ("") にするとプレースホルダーが表示されます
+  // =====================================================
+  const pages = [
+    { src: "",  label: "images/inu_01.jpg" },
+    { src: "",  label: "images/inu_02.jpg" },
+    { src: "",  label: "images/inu_03.jpg" },
+    { src: "",  label: "images/inu_04.jpg" },
+    { src: "",  label: "images/inu_05.jpg" },
+  ];
+
+  let current = 0;
+
+  function render() {
+    const total = pages.length;
+    const page  = pages[current];
+
+    // カウンター・プログレス
+    document.getElementById("pageCounter").textContent = `${current + 1} / ${total}`;
+    document.getElementById("progressBar").style.width = `${((current + 1) / total) * 100}%`;
+
+    // 画像 or プレースホルダー
+    const wrap = document.getElementById("imageWrap");
+    if (page.src) {
+      wrap.innerHTML = `<img src="${page.src}" alt="犬 ${current + 1}ページ目">`;
+    } else {
+      wrap.innerHTML = `
+        <div class="placeholder">
+          <div class="placeholder-num">${current + 1}</div>
+          <div class="placeholder-text">
+            ここに漫画の画像が入ります<br>
+            <span style="font-size:11px;opacity:0.7">${page.label}</span>
+          </div>
+        </div>`;
+    }
+
+    // ボタン制御
+    document.getElementById("btnPrev").classList.toggle("disabled", current === 0);
+    document.getElementById("btnNext").style.display = current === total - 1 ? "none" : "inline-flex";
+    document.getElementById("finished").style.display = current === total - 1 ? "block" : "none";
+  }
+
+  function changePage(dir) {
+    const next = current + dir;
+    if (next < 0 || next >= pages.length) return;
+    current = next;
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // キーボード操作（← →）
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight") changePage(1);
+    if (e.key === "ArrowLeft")  changePage(-1);
+  });
+
+  render();
+</script>
+
+</body>
+</html>
