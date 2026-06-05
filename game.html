@@ -1,171 +1,369 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>game | あの頃日和</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #faf9f7; --bg-card: #ffffff; --bg-sub: #f4f3f0;
-      --text: #1a1a18; --text-sub: #6b6b66; --text-hint: #a8a8a2;
-      --border: rgba(0,0,0,0.10); --border-md: rgba(0,0,0,0.16);
-      --radius-lg: 16px;
-    }
-    body { background: var(--bg); color: var(--text); font-family: 'Noto Serif JP', serif; min-height: 100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ちいかわジャンプ | あの頃日和</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    background: linear-gradient(#87CEEB, #E0F6FF);
+    font-family: 'Hiragino Maru Gothic Pro', 'Rounded Mplus 1c', sans-serif;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #game { 
+    display: block; 
+    width: 100vw;
+    height: 100vh;
+  }
+  #info {
+    position: absolute;
+    top: env(safe-area-inset-top, 15px);
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #5C4B51;
+    font-weight: bold;
+    font-size: 20px;
+    z-index: 10;
+    text-shadow: 2px 2px 0px #fff;
+    pointer-events: none;
+  }
+  #level { font-size: 14px; color: #FF6B9D; }
+  #chargeBar {
+    position: absolute;
+    bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 20px;
+    background: rgba(255,255,255,0.5);
+    border: 3px solid #5C4B51;
+    border-radius: 10px;
+    display: none;
+    z-index: 10;
+  }
+  #chargeFill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFE5B4, #FF6B9D);
+    border-radius: 7px;
+    width: 0%;
+    transition: width 0.05s;
+  }
+  #chargeText {
+    position: absolute;
+    bottom: calc(145px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    color: #5C4B51;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 0px #fff;
+    display: none;
+    z-index: 10;
+    pointer-events: none;
+  }
 
-    nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1.4rem 1.5rem; border-bottom: 0.5px solid var(--border);
-      max-width: 760px; margin: 0 auto;
-    }
-    .logo { font-size: 14px; letter-spacing: 0.15em; color: var(--text); text-decoration: none; }
-    .nav-back { font-size: 12px; letter-spacing: 0.08em; color: var(--text-hint); text-decoration: none; }
-    .nav-back:hover { color: var(--text-sub); }
-
-    .page-header {
-      max-width: 680px; margin: 0 auto;
-      padding: 3rem 1.5rem 2rem; text-align: center;
-      border-bottom: 0.5px solid var(--border);
-    }
-    .page-label { font-size: 10px; letter-spacing: 0.28em; color: var(--text-hint); text-transform: uppercase; margin-bottom: 0.8rem; }
-    .page-title { font-size: 22px; font-weight: 300; letter-spacing: 0.14em; margin-bottom: 0.6rem; }
-    .page-desc { font-size: 12px; color: var(--text-sub); line-height: 2.2; letter-spacing: 0.05em; }
-
-    .game-wrap {
-      max-width: 680px; margin: 2.5rem auto; padding: 0 1.5rem 3rem;
-    }
-
-    .game-card {
-      background: var(--bg-card);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      margin-bottom: 1rem;
-    }
-
-    .game-title-bar {
-      padding: 1rem 1.4rem;
-      border-bottom: 0.5px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .game-name { font-size: 14px; font-weight: 500; letter-spacing: 0.05em; }
-    .game-tag {
-      font-size: 10px; letter-spacing: 0.08em;
-      background: var(--bg-sub); border-radius: 100px;
-      padding: 3px 10px; color: var(--text-hint);
-    }
-
-    .game-frame-wrap {
-      position: relative;
-      width: 100%;
-      height: 500px;
-      background: var(--bg-sub);
-    }
-
-    .game-frame-wrap iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-
-    /* iframeが読み込めない時のフォールバック */
-    .fallback {
-      display: none;
-      text-align: center;
-      padding: 3rem 1rem;
-    }
-    .fallback-text {
-      font-size: 13px; color: var(--text-sub);
-      line-height: 2.2; letter-spacing: 0.05em;
-      margin-bottom: 1.5rem;
-    }
-
-    .btn-open {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      font-family: 'Noto Serif JP', serif;
-      font-size: 13px; letter-spacing: 0.1em;
-      padding: 0.8rem 2rem;
-      background: var(--text); color: #fff;
-      border: none; border-radius: 100px;
-      text-decoration: none; cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-open:hover { background: #333; }
-
-    .game-note {
-      font-size: 11px; color: var(--text-hint);
-      text-align: center; letter-spacing: 0.05em;
-      line-height: 2; margin-top: 0.8rem;
-    }
-
-    footer {
-      padding: 1.8rem 0; text-align: center;
-      font-size: 10px; letter-spacing: 0.12em; color: var(--text-hint);
-      border-top: 0.5px solid var(--border);
-    }
-  </style>
+  /* 戻るボタン */
+  #backBtn {
+    position: absolute;
+    top: env(safe-area-inset-top, 15px);
+    left: 15px;
+    z-index: 20;
+    background: rgba(255,255,255,0.8);
+    border: 2px solid #5C4B51;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 13px;
+    color: #5C4B51;
+    text-decoration: none;
+    font-family: 'Hiragino Maru Gothic Pro', sans-serif;
+    font-weight: bold;
+  }
+</style>
 </head>
 <body>
-
-<nav>
-  <a href="index.html" class="logo">あの頃日和</a>
-  <a href="index.html" class="nav-back">← トップに戻る</a>
-</nav>
-
-<div class="page-header">
-  <div class="page-label">game</div>
-  <div class="page-title">あそぶ</div>
-  <div class="page-desc">ちょっと休憩、ゲームでもどうぞ。</div>
+<a href="index.html" id="backBtn">← もどる</a>
+<div id="info">
+  タップでジャンプ / 長押しで大ジャンプ！<br>
+  スコア: <span id="score">0</span> 
+  <span id="level">Lv.1</span>
 </div>
-
-<div class="game-wrap">
-
-  <div class="game-card">
-    <div class="game-title-bar">
-      <span class="game-name">ちいかわジャンプ</span>
-      <span class="game-tag">ジャンプゲーム</span>
-    </div>
-
-    <div class="game-frame-wrap">
-      <iframe
-        id="gameFrame"
-        src="https://cdn.fbsbx.com/v/t65.102178-21/712843074_1452884039945666_6509048391411764589_n.jpg/chiikawa-jump_web_artifact_1_5b3cc981aa26.html?_nc_ht=cdn.fbsbx.com&_nc_ohc=7lYNrnreA1EQ7kNvwFCdbzz&sdl=0&ccb=14-4&oh=00_Af_Jpc9kObGoS8yI-pFHlszBYsYZnDzSvhP4bUgy8wAMgQ&oe=6A217072&_nc_sid=4ee932&utm_source=meta_ai_web_share_copy_link&utm_medium=share&utm_campaign=ecto_share"
-        allowfullscreen
-        loading="lazy">
-      </iframe>
-
-      <!-- 読み込めない場合 -->
-      <div class="fallback" id="fallback">
-        <div class="fallback-text">
-          ゲームを別タブで開いてください。
-        </div>
-        <a href="https://cdn.fbsbx.com/v/t65.102178-21/712843074_1452884039945666_6509048391411764589_n.jpg/chiikawa-jump_web_artifact_1_5b3cc981aa26.html?_nc_ht=cdn.fbsbx.com&_nc_ohc=7lYNrnreA1EQ7kNvwFCdbzz&sdl=0&ccb=14-4&oh=00_Af_Jpc9kObGoS8yI-pFHlszBYsYZnDzSvhP4bUgy8wAMgQ&oe=6A217072&_nc_sid=4ee932&utm_source=meta_ai_web_share_copy_link&utm_medium=share&utm_campaign=ecto_share"
-           target="_blank" class="btn-open">ゲームを開く →</a>
-      </div>
-    </div>
-  </div>
-
-  <p class="game-note">※ うまく表示されない場合は「ゲームを開く」ボタンから別タブで遊べます</p>
-
-</div>
-
-<footer>© 2025 Rick · あの頃日和</footer>
+<div id="chargeText">チャージ中...</div>
+<div id="chargeBar"><div id="chargeFill"></div></div>
+<canvas id="game"></canvas>
 
 <script>
-  // iframeが読み込めない場合はボタンを表示
-  const frame = document.getElementById('gameFrame');
-  frame.addEventListener('error', () => {
-    frame.style.display = 'none';
-    document.getElementById('fallback').style.display = 'block';
-  });
-</script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const levelEl = document.getElementById('level');
+const chargeBar = document.getElementById('chargeBar');
+const chargeFill = document.getElementById('chargeFill');
+const chargeText = document.getElementById('chargeText');
 
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', () => setTimeout(resize, 100));
+
+let chiikawa = { 
+  x: 60, y: 0, vy: 0, r: 22, 
+  jumping: false, 
+  blinkTimer: 0,
+  cheek: 0,
+  charging: false,
+  chargePower: 0
+};
+let groundY = canvas.height - 100;
+chiikawa.y = groundY - chiikawa.r * 2;
+
+let gravity = 0.65;
+let obstacles = [];
+let score = 0;
+let gameOver = false;
+let frame = 0;
+let speed = 5;
+let spawnRate = 100;
+let level = 1;
+let pressStartTime = 0;
+let isPressing = false;
+
+function drawChiikawa() {
+  let shakeX = 0, shakeY = 0;
+  if (chiikawa.charging) {
+    shakeX = (Math.random() - 0.5) * chiikawa.chargePower * 0.3;
+    shakeY = (Math.random() - 0.5) * chiikawa.chargePower * 0.3;
+  }
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath();
+  ctx.arc(chiikawa.x + chiikawa.r + shakeX, chiikawa.y + chiikawa.r + shakeY, chiikawa.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#5C4B51';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  if (chiikawa.charging) {
+    ctx.strokeStyle = `rgba(255, 107, 157, ${chiikawa.chargePower / 100})`;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(chiikawa.x + chiikawa.r, chiikawa.y + chiikawa.r, chiikawa.r + 5 + chiikawa.chargePower/10, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath();
+  ctx.arc(chiikawa.x + chiikawa.r - 12 + shakeX, chiikawa.y + 5 + shakeY, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(chiikawa.x + chiikawa.r + 12 + shakeX, chiikawa.y + 5 + shakeY, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  chiikawa.blinkTimer++;
+  if (chiikawa.blinkTimer > 120) chiikawa.blinkTimer = 0;
+  let eyeOpen = chiikawa.blinkTimer < 115;
+  ctx.fillStyle = '#5C4B51';
+  if (eyeOpen) {
+    let eyeSize = chiikawa.charging ? 3.5 : 2.5;
+    ctx.beginPath();
+    ctx.arc(chiikawa.x + chiikawa.r - 7 + shakeX, chiikawa.y + chiikawa.r + shakeY, eyeSize, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(chiikawa.x + chiikawa.r + 7 + shakeX, chiikawa.y + chiikawa.r + shakeY, eyeSize, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(chiikawa.x + chiikawa.r - 10 + shakeX, chiikawa.y + chiikawa.r + shakeY);
+    ctx.lineTo(chiikawa.x + chiikawa.r - 4 + shakeX, chiikawa.y + chiikawa.r + shakeY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(chiikawa.x + chiikawa.r + 4 + shakeX, chiikawa.y + chiikawa.r + shakeY);
+    ctx.lineTo(chiikawa.x + chiikawa.r + 10 + shakeX, chiikawa.y + chiikawa.r + shakeY);
+    ctx.stroke();
+  }
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  if (chiikawa.charging) {
+    ctx.moveTo(chiikawa.x + chiikawa.r - 5 + shakeX, chiikawa.y + chiikawa.r + 5 + shakeY);
+    ctx.lineTo(chiikawa.x + chiikawa.r + 5 + shakeX, chiikawa.y + chiikawa.r + 5 + shakeY);
+  } else {
+    ctx.arc(chiikawa.x + chiikawa.r + shakeX, chiikawa.y + chiikawa.r + 5 + shakeY, 4, 0, Math.PI);
+  }
+  ctx.stroke();
+  chiikawa.cheek = Math.sin(frame * 0.1) * 2 + 2;
+  let cheekAlpha = chiikawa.charging ? 0.9 : 0.6;
+  ctx.fillStyle = `rgba(255, 182, 193, ${cheekAlpha})`;
+  ctx.beginPath();
+  ctx.arc(chiikawa.x + chiikawa.r - 15 + shakeX, chiikawa.y + chiikawa.r + 3 + shakeY, chiikawa.cheek, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(chiikawa.x + chiikawa.r + 15 + shakeX, chiikawa.y + chiikawa.r + 3 + shakeY, chiikawa.cheek, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawObstacle(obs) {
+  ctx.fillStyle = obs.color;
+  ctx.strokeStyle = '#5C4B51';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.roundRect(obs.x, obs.y, obs.w, obs.h, 8);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#5C4B51';
+  let spikes = Math.floor(obs.h / 25);
+  for(let i = 0; i < spikes; i++) {
+    ctx.beginPath();
+    ctx.moveTo(obs.x + 5 + i*10, obs.y);
+    ctx.lineTo(obs.x + 10 + i*10, obs.y - 8);
+    ctx.lineTo(obs.x + 15 + i*10, obs.y);
+    ctx.fill();
+  }
+  ctx.fillStyle = '#FFFFFF';
+  if (obs.h > 100) {
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(obs.x + obs.w/2 - 6, obs.y + obs.h/2 - 8);
+    ctx.lineTo(obs.x + obs.w/2 - 2, obs.y + obs.h/2 - 5);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(obs.x + obs.w/2 + 6, obs.y + obs.h/2 - 8);
+    ctx.lineTo(obs.x + obs.w/2 + 2, obs.y + obs.h/2 - 5);
+    ctx.stroke();
+  } else {
+    ctx.beginPath();
+    ctx.arc(obs.x + obs.w/2 - 4, obs.y + obs.h/2 - 5, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(obs.x + obs.w/2 + 4, obs.y + obs.h/2 - 5, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function update() {
+  if (gameOver) return;
+  frame++;
+  groundY = canvas.height - 100;
+  if (score >= 10 && level === 1) { level = 2; speed = 6.5; spawnRate = 75; levelEl.textContent = 'Lv.2'; }
+  if (score >= 25 && level === 2) { level = 3; speed = 8; spawnRate = 55; levelEl.textContent = 'Lv.3 鬼'; }
+  if (score >= 50 && level === 3) { level = 4; speed = 9.5; spawnRate = 40; levelEl.textContent = 'Lv.4 無理'; }
+  if (isPressing && !chiikawa.jumping && !gameOver) {
+    chiikawa.charging = true;
+    chiikawa.chargePower = Math.min(chiikawa.chargePower + 2.5, 100);
+    chargeBar.style.display = 'block';
+    chargeText.style.display = 'block';
+    chargeFill.style.width = chiikawa.chargePower + '%';
+  }
+  chiikawa.vy += gravity;
+  chiikawa.y += chiikawa.vy;
+  if (chiikawa.y > groundY - chiikawa.r * 2) {
+    chiikawa.y = groundY - chiikawa.r * 2;
+    chiikawa.vy = 0;
+    chiikawa.jumping = false;
+  }
+  if (frame % spawnRate === 0) {
+    let h = 50 + Math.random() * 120;
+    let colors = ['#8B7D7B', '#A0522D', '#CD5C5C', '#8B4513'];
+    obstacles.push({ x: canvas.width, y: groundY - h, w: 35, h: h, color: colors[Math.floor(Math.random() * colors.length)] });
+    if (level >= 3 && Math.random() > 0.4) {
+      let h2 = 60 + Math.random() * 80;
+      obstacles.push({ x: canvas.width + 180, y: groundY - h2, w: 30, h: h2, color: colors[Math.floor(Math.random() * colors.length)] });
+    }
+  }
+  obstacles.forEach(obs => {
+    obs.x -= speed;
+    let cx = chiikawa.x + chiikawa.r;
+    let cy = chiikawa.y + chiikawa.r;
+    let testX = cx, testY = cy;
+    if (cx < obs.x) testX = obs.x;
+    else if (cx > obs.x + obs.w) testX = obs.x + obs.w;
+    if (cy < obs.y) testY = obs.y;
+    else if (cy > obs.y + obs.h) testY = obs.y + obs.h;
+    let distX = cx - testX, distY = cy - testY;
+    if (Math.sqrt(distX*distX + distY*distY) < chiikawa.r) { gameOver = true; }
+  });
+  obstacles = obstacles.filter(obs => {
+    if (obs.x < -50) { score++; scoreEl.textContent = score; return false; }
+    return true;
+  });
+}
+
+function draw() {
+  let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, '#87CEEB');
+  gradient.addColorStop(1, '#E0F6FF');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  for(let i = 0; i < 3; i++) {
+    let x = (frame * 0.5 + i * 300) % (canvas.width + 100) - 50;
+    ctx.beginPath();
+    ctx.arc(x, 80, 30, 0, Math.PI * 2);
+    ctx.arc(x + 35, 80, 40, 0, Math.PI * 2);
+    ctx.arc(x + 70, 80, 30, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = '#A8D8A8';
+  ctx.fillRect(0, groundY, canvas.width, 100);
+  ctx.fillStyle = '#8FBC8F';
+  for(let i = 0; i < canvas.width; i += 20) { ctx.fillRect(i, groundY, 10, 5); }
+  drawChiikawa();
+  obstacles.forEach(drawObstacle);
+  if (gameOver) {
+    ctx.fillStyle = 'rgba(92, 75, 81, 0.8)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 45px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('なんとかなれ〜', canvas.width/2, canvas.height/2 - 30);
+    ctx.font = '22px sans-serif';
+    ctx.fillText('スコア: ' + score, canvas.width/2, canvas.height/2 + 10);
+    ctx.fillText('タップでもう1回！', canvas.width/2, canvas.height/2 + 50);
+    chargeBar.style.display = 'none';
+    chargeText.style.display = 'none';
+  }
+}
+
+function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+function startCharge() {
+  if (gameOver) {
+    chiikawa.y = groundY - chiikawa.r * 2;
+    chiikawa.vy = 0; obstacles = []; score = 0; speed = 5; spawnRate = 100; level = 1;
+    scoreEl.textContent = 0; levelEl.textContent = 'Lv.1'; gameOver = false; frame = 0;
+    chiikawa.chargePower = 0; chiikawa.charging = false; return;
+  }
+  if (!chiikawa.jumping) { isPressing = true; pressStartTime = Date.now(); }
+}
+
+function releaseJump() {
+  if (gameOver || !isPressing) return;
+  let pressDuration = Date.now() - pressStartTime;
+  if (pressDuration < 100) { chiikawa.vy = -14; }
+  else { chiikawa.vy = -14 - (chiikawa.chargePower / 100) * 8; }
+  chiikawa.jumping = true; chiikawa.charging = false; chiikawa.chargePower = 0;
+  chargeBar.style.display = 'none'; chargeText.style.display = 'none';
+  chargeFill.style.width = '0%'; isPressing = false;
+}
+
+document.addEventListener('keydown', e => { if (e.code === 'Space' && !isPressing) startCharge(); });
+document.addEventListener('keyup', e => { if (e.code === 'Space') releaseJump(); });
+document.addEventListener('touchstart', e => { e.preventDefault(); startCharge(); }, {passive: false});
+document.addEventListener('touchend', e => { e.preventDefault(); releaseJump(); }, {passive: false});
+document.addEventListener('mousedown', e => { startCharge(); });
+document.addEventListener('mouseup', e => { releaseJump(); });
+
+loop();
+</script>
 </body>
 </html>
